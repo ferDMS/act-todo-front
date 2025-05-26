@@ -25,45 +25,71 @@ export default function TodoApp() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState("")
 
-  // Load todos from localStorage on mount
   useEffect(() => {
-    const savedTodos = localStorage.getItem("todos")
-    if (savedTodos) {
-      const parsedTodos = JSON.parse(savedTodos).map((todo: any) => ({
-        ...todo,
-        createdAt: new Date(todo.createdAt),
-      }))
-      setTodos(parsedTodos)
+    const fetchTodos = async () => {
+      const response = await fetch('/api/todos');
+      const data = await response.json();
+      setTodos(data);
+    };
+    fetchTodos();
+  }, []);
+
+  // Sincronizar los todos con el backend siempre que cambien
+  useEffect(() => {
+    const syncTodosWithBackend = async () => {
+      try {
+        await fetch('/api/todos/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(todos),
+        });
+      } catch (error) {
+        console.error("Error syncing todos with backend:", error);
+      }
+    };
+
+    if (todos.length > 0) {
+      syncTodosWithBackend();
     }
-  }, [])
+  }, [todos]);
 
-  // Save todos to localStorage whenever todos change
-  useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos))
-  }, [todos])
-
-  const addTodo = () => {
+  const addTodo = async () => {
     if (newTodo.trim()) {
-      const todo: Todo = {
+      const todo = {
         id: Date.now().toString(),
         text: newTodo.trim(),
         completed: false,
         priority: newPriority,
         createdAt: new Date(),
-      }
-      setTodos([todo, ...todos])
-      setNewTodo("")
-      setNewPriority("medium")
+      };
+      await fetch('/api/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(todo),
+      });
+      setTodos([todo, ...todos]);
+      setNewTodo("");
+      setNewPriority("medium");
     }
-  }
+  };
 
-  const toggleTodo = (id: string) => {
-    setTodos(todos.map((todo) => (todo.id === id ? { ...todo, completed: !todo.completed } : todo)))
-  }
+  const toggleTodo = async (id: string) => {
+    const todo = todos.find((t) => t.id === id);
+    if (todo) {
+      const updatedTodo = { ...todo, completed: !todo.completed };
+      await fetch(`/api/todos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedTodo),
+      });
+      setTodos(todos.map((t) => (t.id === id ? updatedTodo : t)));
+    }
+  };
 
-  const deleteTodo = (id: string) => {
-    setTodos(todos.filter((todo) => todo.id !== id))
-  }
+  const deleteTodo = async (id: string) => {
+    await fetch(`/api/todos/${id}`, { method: 'DELETE' });
+    setTodos(todos.filter((todo) => todo.id !== id));
+  };
 
   const startEditing = (id: string, text: string) => {
     setEditingId(id)
