@@ -27,7 +27,7 @@ export default function TodoApp() {
 
   useEffect(() => {
     const fetchTodos = async () => {
-      const response = await fetch('/api/todos');
+      const response = await fetch('http://localhost:4000/api/todos');
       const data = await response.json();
       setTodos(data);
     };
@@ -38,7 +38,7 @@ export default function TodoApp() {
   useEffect(() => {
     const syncTodosWithBackend = async () => {
       try {
-        await fetch('/api/todos/sync', {
+        await fetch('http://localhost:4000/api/todos/sync', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(todos),
@@ -62,7 +62,7 @@ export default function TodoApp() {
         priority: newPriority,
         createdAt: new Date(),
       };
-      await fetch('/api/todos', {
+      await fetch('http://localhost:4000/api/todos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(todo),
@@ -77,7 +77,7 @@ export default function TodoApp() {
     const todo = todos.find((t) => t.id === id);
     if (todo) {
       const updatedTodo = { ...todo, completed: !todo.completed };
-      await fetch(`/api/todos/${id}`, {
+      await fetch(`http://localhost:4000/api/todos/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedTodo),
@@ -87,7 +87,7 @@ export default function TodoApp() {
   };
 
   const deleteTodo = async (id: string) => {
-    await fetch(`/api/todos/${id}`, { method: 'DELETE' });
+    await fetch(`http://localhost:4000/api/todos/${id}`, { method: 'DELETE' });
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
