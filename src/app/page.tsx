@@ -114,7 +114,7 @@ export default function TodoApp() {
       <div className="max-w-2xl mx-auto px-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center">My Todo List</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center">My To Do List</CardTitle>
             <div className="flex justify-center gap-4 text-sm text-muted-foreground">
               <span>{activeTodosCount} active</span>
               <span>{completedTodosCount} completed</span>
