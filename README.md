@@ -17,6 +17,7 @@ a una lista compartida de tareas que se pueden marcar como completadas o no.
 
 Cómo correr el proyecto localmente:
 Para correrlo, debes instalar las librerias:
+
 npm install
 
 Para backend
@@ -51,7 +52,9 @@ Para typescript
 * npm install -D @types/jsonwebtoken  
 * npm install -D @types/express-validator  
 
+Y luego haces "npm run dev" en la terminal
 
+Para la pagina seria este link: https://act-todo-front.vercel.app/
 
 
 
